@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      MOCK_MODE: "true"
+      APP_ENV: production
+      DATABASE_URL: sqlite:////data/documind.db
+      VECTOR_STORE_DIR: /data/vector_store
+      UPLOAD_DIR: /data/uploads
+      CORS_ORIGINS: http://localhost:5173
+    volumes:
+      - documind-data:/data
+    restart: unless-stopped
+
+  # React/Vite frontend served on :5173; talks to the backend at http://localhost:8000.
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  documind-data:
